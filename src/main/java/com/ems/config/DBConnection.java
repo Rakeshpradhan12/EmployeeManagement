@@ -1,30 +1,45 @@
 package com.ems.config;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class DBConnection {
     private static Connection connection;
 
-    public static Connection getConnection() throws Exception{
-        Properties prop = new Properties();//predefined class in java to load properties
-        prop.load(DBConnection.class.getClassLoader().getResourceAsStream("db.properties"));
+    private DBConnection() throws IOException {
 
-        final String URI = prop.getProperty("db.URI");
-        System.out.println(URI);
-        final String USERNAME =prop.getProperty("db.USERNAME");
-        final String PASSWORD = prop.getProperty("db.PASSWORD");
-        connection = DriverManager.getConnection(URI,USERNAME,PASSWORD);
-        System.out.println("connection Established ...");
+           Properties prop = new Properties();//predefined class in java to load properties
 
-        return connection;
+           prop.load( DBConnection.class.getClassLoader().getResourceAsStream("db.properties"));
+           final String URL = prop.getProperty("URL");
+           final String USERNAME =prop.getProperty("USERNAME");
+           final String PASSWORD = prop.getProperty("PASSWORD");
+           try{
+               connection = DriverManager.getConnection(URL,USERNAME,PASSWORD);
+               System.out.println("connection Established ...");
+           }
+           catch (SQLException s){
+               s.printStackTrace();
+           }
+
     }
 
-    public static void main(String[] args) throws Exception {
-        getConnection();
+    public static Connection getDBConnection() throws IOException{
+          if(connection == null){
+              new DBConnection();
+          }
+          return  connection;
+
     }
+
+  //for testing
+//    public static void main(String[] args) throws Exception {
+//        getConnection();
+//    }
 
 
 
